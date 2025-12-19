@@ -10,11 +10,21 @@ export async function middleware(request: NextRequest) {
 
     if (!supabaseUrl || !supabaseAnonKey) {
       // Si les variables d'environnement ne sont pas définies, permettre l'accès aux routes publiques
-      // et rediriger les autres vers login
+      // et aux dashboards en mode démo (avec fake data)
       const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/verify-email']
+      const dashboardRoutes = ['/dashboard/patient', '/dashboard/professional', '/dashboard/admin', '/dashboard/client']
+      
+      // Permettre l'accès aux routes publiques
       if (publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
         return NextResponse.next()
       }
+      
+      // Permettre l'accès aux dashboards (mode démo avec fake data)
+      if (dashboardRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
+        return NextResponse.next()
+      }
+      
+      // Pour toutes les autres routes, rediriger vers login
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
@@ -119,12 +129,20 @@ export async function middleware(request: NextRequest) {
 
     return response
   } catch (error) {
-    // En cas d'erreur, permettre l'accès aux routes publiques
+    // En cas d'erreur, permettre l'accès aux routes publiques et aux dashboards (mode démo)
     const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/verify-email']
+    const dashboardRoutes = ['/dashboard/patient', '/dashboard/professional', '/dashboard/admin', '/dashboard/client']
+    
     if (publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
       return NextResponse.next()
     }
-    // Pour les routes protégées, rediriger vers login
+    
+    // Permettre l'accès aux dashboards même en cas d'erreur (mode démo avec fake data)
+    if (dashboardRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
+      return NextResponse.next()
+    }
+    
+    // Pour toutes les autres routes, rediriger vers login
     return NextResponse.redirect(new URL('/login', request.url))
   }
 }
