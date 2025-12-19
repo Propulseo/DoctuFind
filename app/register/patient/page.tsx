@@ -1,5 +1,7 @@
 import RegisterPatientForm from '@/components/auth/register-patient-form'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Inscription Patient | Health Finder',
   description: 'Créez votre compte patient',

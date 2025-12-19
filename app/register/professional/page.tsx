@@ -1,5 +1,7 @@
 import RegisterProfessionalForm from '@/components/auth/register-pro-form'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Inscription Professionnel | Health Finder',
   description: 'Créez votre compte professionnel',

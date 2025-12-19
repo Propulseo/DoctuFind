@@ -1,5 +1,7 @@
 import ForgotPasswordForm from '@/components/auth/forgot-password-form'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Mot de passe oublié | Health Finder',
   description: 'Réinitialisez votre mot de passe',
