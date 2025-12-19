@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,12 +13,15 @@ import GoogleAuthButton from './google-auth-button'
 
 export default function LoginForm() {
   const router = useRouter()
-  const supabase = createClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Check if Supabase is configured
+  const supabaseAvailable = isSupabaseConfigured()
+  const supabase = supabaseAvailable ? createClient() : null
 
   const handleTestLogin = (userType: 'patient' | 'professional' | 'admin') => {
     if (userType === 'patient') {
@@ -32,6 +35,13 @@ export default function LoginForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Si Supabase n'est pas configuré, rediriger vers les dashboards en mode démo
+    if (!supabaseAvailable || !supabase) {
+      setError('Mode démo activé. Utilisez les boutons ci-dessous pour accéder aux dashboards.')
+      return
+    }
+    
     setLoading(true)
     setError(null)
 

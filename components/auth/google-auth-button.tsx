@@ -1,15 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 
 export default function GoogleAuthButton() {
-  const supabase = createClient()
   const [loading, setLoading] = useState(false)
+  
+  // Check if Supabase is configured
+  const supabaseAvailable = isSupabaseConfigured()
+  const supabase = supabaseAvailable ? createClient() : null
 
   const handleGoogleLogin = async () => {
+    if (!supabaseAvailable || !supabase) {
+      return // Don't do anything if Supabase is not configured
+    }
+    
     setLoading(true)
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -28,6 +35,11 @@ export default function GoogleAuthButton() {
       console.error('Erreur Google OAuth:', error.message)
       setLoading(false)
     }
+  }
+  
+  // Hide the button if Supabase is not configured
+  if (!supabaseAvailable) {
+    return null
   }
 
   return (
